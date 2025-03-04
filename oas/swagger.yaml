@@ -1,0 +1,134 @@
+openapi: 3.0.3
+info:
+  title: UPS Package and Delivery Device API
+  description: "API for managing UPS shipments, tracking deliveries, and handling\
+    \ package logistics."
+  version: 1.0.0
+servers:
+- url: /
+paths:
+  /packages:
+    post:
+      summary: Create a new UPS package
+      description: "Creates a new UPS shipment order with sender, recipient, and package\
+        \ details."
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Package'
+        required: true
+      responses:
+        "201":
+          description: Package created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackageResponse'
+  /packages/{packageId}:
+    get:
+      summary: Get UPS package details
+      description: Retrieves details of a specific UPS package by its ID.
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Package details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Package'
+  /track/{trackingNumber}:
+    get:
+      summary: Track a UPS package
+      description: Retrieves the current status of a UPS package using its tracking
+        number.
+      parameters:
+      - name: trackingNumber
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Tracking information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrackingInfo'
+  /devices:
+    get:
+      summary: Get list of UPS delivery devices
+      description: Retrieves a list of available UPS delivery devices.
+      responses:
+        "200":
+          description: List of UPS delivery devices
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'
+components:
+  schemas:
+    Package:
+      type: object
+      properties:
+        id:
+          type: string
+        sender:
+          $ref: '#/components/schemas/Package_sender'
+        recipient:
+          $ref: '#/components/schemas/Package_sender'
+        packageDetails:
+          $ref: '#/components/schemas/Package_packageDetails'
+    PackageResponse:
+      type: object
+      properties:
+        packageId:
+          type: string
+        status:
+          type: string
+    TrackingInfo:
+      type: object
+      properties:
+        trackingNumber:
+          type: string
+        status:
+          type: string
+        estimatedDelivery:
+          type: string
+          format: date
+    Device:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        location:
+          type: string
+    Package_sender:
+      type: object
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+    Package_packageDetails:
+      type: object
+      properties:
+        weight:
+          type: number
+        dimensions:
+          type: string
+        content:
+          type: string
