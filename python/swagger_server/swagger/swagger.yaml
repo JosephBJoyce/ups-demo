@@ -1,0 +1,172 @@
+openapi: 3.0.3
+info:
+  title: UPS Package and Delivery Device API
+  description: "API for managing UPS shipments, tracking deliveries, and handling\
+    \ package logistics."
+  version: 1.0.0
+servers:
+- url: /
+paths:
+  /packages:
+    post:
+      summary: Create a new UPS package
+      description: "Creates a new UPS shipment order with sender, recipient, and package\
+        \ details."
+      operationId: packages_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Package'
+        required: true
+      responses:
+        "201":
+          description: Package created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackageResponse'
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /packages/{packageId}:
+    get:
+      summary: Get UPS package details
+      description: Retrieves details of a specific UPS package by its ID.
+      operationId: packages_package_id_get
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Package details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Package'
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /track/{trackingNumber}:
+    get:
+      summary: Track a UPS package
+      description: Retrieves the current status of a UPS package using its tracking
+        number.
+      operationId: track_tracking_number_get
+      parameters:
+      - name: trackingNumber
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Tracking information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrackingInfo'
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /devices:
+    get:
+      summary: Get list of UPS delivery devices
+      description: Retrieves a list of available UPS delivery devices.
+      operationId: devices_get
+      responses:
+        "200":
+          description: List of UPS delivery devices
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'
+                x-content-type: application/json
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+components:
+  schemas:
+    Package:
+      type: object
+      properties:
+        id:
+          type: string
+        sender:
+          $ref: '#/components/schemas/Package_sender'
+        recipient:
+          $ref: '#/components/schemas/Package_sender'
+        packageDetails:
+          $ref: '#/components/schemas/Package_packageDetails'
+      example:
+        packageDetails:
+          weight: 0.80082819046101150206595775671303272247314453125
+          content: content
+          dimensions: dimensions
+        sender:
+          address: address
+          name: name
+        recipient: null
+        id: id
+    PackageResponse:
+      type: object
+      properties:
+        packageId:
+          type: string
+        status:
+          type: string
+      example:
+        packageId: packageId
+        status: status
+    TrackingInfo:
+      type: object
+      properties:
+        trackingNumber:
+          type: string
+        status:
+          type: string
+        estimatedDelivery:
+          type: string
+          format: date
+      example:
+        trackingNumber: trackingNumber
+        estimatedDelivery: 2000-01-23
+        status: status
+    Device:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        location:
+          type: string
+      example:
+        location: location
+        id: id
+        type: type
+    Package_sender:
+      type: object
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+      example:
+        address: address
+        name: name
+    Package_packageDetails:
+      type: object
+      properties:
+        weight:
+          type: number
+        dimensions:
+          type: string
+        content:
+          type: string
+      example:
+        weight: 0.80082819046101150206595775671303272247314453125
+        content: content
+        dimensions: dimensions
+
